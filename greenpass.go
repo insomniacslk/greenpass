@@ -1,3 +1,8 @@
+// Package greenpass provides functions to decode QR-encoded EU digital
+// COVID-19 certificates.
+//
+// See
+// https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf
 package greenpass
 
 import (
@@ -45,7 +50,8 @@ func Decode(img image.Image) (interface{}, error) {
 		return nil, fmt.Errorf("failed to decode QR code: %w", err)
 	}
 
-	// strip the leading "HC1:" string
+	// strip the leading "HC1:" string. HC1 stands for Health Certificate
+	// version 1.
 	b45encoded := strings.TrimPrefix(result.GetText(), "HC1:")
 	decoded, err := base45.Decode([]byte(b45encoded))
 	if err != nil {
