@@ -22,36 +22,15 @@ https://github.com/ehn-dcc-development/dcc-testdata/blob/main/IE/png/1_qr.png .
 Then run
 ```
 $ ./greenpass 1_qr.png
-map[interface {}]interface {}{
-    -260: map[interface {}]interface {}{
-        0x1: map[interface {}]interface {}{
-            "dob": "1988-06-07",
-            "nam": map[interface {}]interface {}{
-                "fn":  "Bloggs",
-                "fnt": "BLOGGS",
-                "gn":  "Jane",
-                "gnt": "JANE",
-            },
-            "v": []interface {}{
-                map[interface {}]interface {}{
-                    "ci": "URN:UVCI:01:IE:52d0dc929c884cf8998a7987f0b9d863#2",
-                    "co": "IE",
-                    "dn": uint64(0x1),
-                    "dt": "2021-05-06",
-                    "is": "HSE",
-                    "ma": "ORG-100030215",
-                    "mp": "EU/1/20/1528",
-                    "sd": uint64(0x2),
-                    "tg": "840539006",
-                    "vp": "1119349007",
-                },
-            },
-            "ver": "1.0.4",
-        },
+&greenpass.CovidCertificate{
+    Ver: "1.0.4",
+    Nam: greenpass.PersonName{Fn:"Bloggs", Fnt:"BLOGGS", Gn:"Jane", Gnt:"JANE"},
+    DoB: "1988-06-07",
+    V:   {
+        {Tg:"840539006", Vp:"1119349007", Mp:"EU/1/20/1528", Ma:"ORG-100030215", Dn:1, Sd:2, Dt:"2021-05-06", Co:"IE", Is:"HSE", Ci:"URN:UVCI:01:IE:52d0dc929c884cf8998a7987f0b9d863#2"},
     },
-    0x1: "IE",
-    0x4: uint64(0x60c71a90),
-    0x6: uint64(0x60bdced4),
+    T:  nil,
+    R:  nil,
 }
 ```
 

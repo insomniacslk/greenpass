@@ -25,7 +25,7 @@ import (
 
 // Read reads an io.Reader's data into a structure containing the EU COVID-19
 // Green Pass data.
-func Read(r io.Reader) (interface{}, error) {
+func Read(r io.Reader) (*CovidCertificate, error) {
 	img, _, err := image.Decode(r)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode image: %w", err)
@@ -35,7 +35,7 @@ func Read(r io.Reader) (interface{}, error) {
 
 // Decode decodes an image into a structure containing the EU COVID-19
 // Green Pass data.
-func Decode(img image.Image) (interface{}, error) {
+func Decode(img image.Image) (*CovidCertificate, error) {
 
 	// prepare BinaryBitmap
 	bmp, err := gozxing.NewBinaryBitmapFromImage(img)
