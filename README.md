@@ -21,17 +21,11 @@ https://github.com/ehn-dcc-development/dcc-testdata/blob/main/IE/png/1_qr.png .
 
 Then run
 ```
-$ ./greenpass 1_qr.png
-&greenpass.CovidCertificate{
-    Ver: "1.0.4",
-    Nam: greenpass.PersonName{Fn:"Bloggs", Fnt:"BLOGGS", Gn:"Jane", Gnt:"JANE"},
-    DoB: "1988-06-07",
-    V:   {
-        {Tg:"840539006", Vp:"1119349007", Mp:"EU/1/20/1528", Ma:"ORG-100030215", Dn:1, Sd:2, Dt:"2021-05-06", Co:"IE", Is:"HSE", Ci:"URN:UVCI:01:IE:52d0dc929c884cf8998a7987f0b9d863#2"},
-    },
-    T:  nil,
-    R:  nil,
-}
+$ go run . 1_qr.png
+Name             : Jane Bloggs
+Date of Birth    : 1988-06-07
+Status           : partially vaccinated (1 of 2 doses)
+Vaccination date : 2021-05-06
 ```
 
 ## Library

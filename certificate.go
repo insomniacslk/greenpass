@@ -30,16 +30,16 @@ func (c *CovidCertificate) Summary() string {
 		vaccineFound = true
 	}
 	if vaccineFound {
-		dn := c.V[0].Dn
-		sd := c.V[0].Sd
+		dn := int(c.V[0].Dn)
+		sd := int(c.V[0].Sd)
 		if dn == 0 {
 			status = "not vaccinated"
 		} else if dn < sd {
-			status = fmt.Sprintf("partially vaccinated (%d/%d doses)", dn, sd)
+			status = fmt.Sprintf("partially vaccinated (%d of %d doses)", dn, sd)
 		} else if dn == sd {
 			status = "fully vaccinated"
 		} else {
-			status = fmt.Sprintf("fully vaccinated with booster dose (%d/%d doses)", dn, sd)
+			status = fmt.Sprintf("fully vaccinated with booster dose (%d of %d doses)", dn, sd)
 		}
 	}
 	ret := fmt.Sprintf("Name             : %s %s\n", c.Nam.Gn, c.Nam.Fn)
