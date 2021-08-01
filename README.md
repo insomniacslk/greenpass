@@ -87,4 +87,4 @@ fmt.Printf("%+v", gp)
 * [Digital COVID Certificate test data](https://github.com/ehn-dcc-development/dcc-testdata)
 * [Online Digital COVID Certificate decoder](https://ehealth.vyncke.org/) with a
   technical explanation
-
+* [Reverse engineering digital COVID-19 certificates](https://harrisonsand.com/posts/covid-certificates/)
