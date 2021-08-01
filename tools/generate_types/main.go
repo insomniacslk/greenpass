@@ -34,6 +34,9 @@ func getURL(version, filename string) url.URL {
 func get(version, filename string, obj interface{}) error {
 	u := getURL(version, filename)
 	resp, err := http.Get(u.String())
+	if err != nil {
+		return fmt.Errorf("HTTP GET failed: %w", err)
+	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -45,12 +48,14 @@ func get(version, filename string, obj interface{}) error {
 	return nil
 }
 
+// DiseaseAgentTargeted maps disease-agent-targeted.json to a struct.
 type DiseaseAgentTargeted struct {
 	ValueSetID     string
 	ValueSetDate   string
 	ValueSetValues map[string]ValueSetValue
 }
 
+// ValueSetValue is a sub-type of DiseaseAgentTargeted.
 type ValueSetValue struct {
 	Display string
 	Lang    string

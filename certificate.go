@@ -2,6 +2,11 @@ package greenpass
 
 import "fmt"
 
+// Generate types from the updated JSON specifications by running `go generate`.
+//
+//go:generate go run tools/generate_types/main.go -o types.go
+//go:generate gofmt -w types.go
+
 // CovidCertificate represents an EU Digital Covid Certificate, see
 // specification at
 // https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf
@@ -62,11 +67,6 @@ type PersonName struct {
 	// Standardised given name
 	Gnt string
 }
-
-//go:generate go run tools/generate_types/main.go -o types.go
-//go:generate gofmt -w types.go
-
-type TargetedAgent string
 
 // VaccinationDose describes a vaccination dose according to the DCC spec.
 type VaccinationDose struct {
