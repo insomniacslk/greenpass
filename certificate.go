@@ -47,14 +47,15 @@ func (c *CovidCertificate) Summary() string {
 			status = fmt.Sprintf("fully vaccinated with booster dose (%d of %d doses)", dn, sd)
 		}
 	}
-	ret := fmt.Sprintf("Name                : %s %s\n", c.Nam.Gn, c.Nam.Fn)
-	ret += fmt.Sprintf("Date of Birth       : %s\n", c.DoB)
-	ret += fmt.Sprintf("Status              : %s\n", status)
+	ret := fmt.Sprintf("Name                    : %s %s\n", c.Nam.Gn, c.Nam.Fn)
+	ret += fmt.Sprintf("Date of Birth           : %s\n", c.DoB)
+	ret += fmt.Sprintf("Status                  : %s\n", status)
 	if vaccineFound {
-		ret += fmt.Sprintf("Vaccination date    : %s\n", c.V[0].Dt)
-		ret += fmt.Sprintf("Country             : %s\n", c.V[0].Co)
-		ret += fmt.Sprintf("Vaccine Prophylaxis : %s\n", c.V[0].Vp)
-		ret += fmt.Sprintf("Vaccine Product     : %s\n", c.V[0].Mp)
+		ret += fmt.Sprintf("Vaccination date        : %s\n", c.V[0].Dt)
+		ret += fmt.Sprintf("Country                 : %s\n", c.V[0].Co)
+		ret += fmt.Sprintf("Vaccine Prophylaxis     : %s\n", c.V[0].Vp)
+		ret += fmt.Sprintf("Vaccine Product         : %s\n", c.V[0].Mp)
+		ret += fmt.Sprintf("Marketing Authorization : %s\n", c.V[0].Ma)
 	}
 	return ret
 }
@@ -83,7 +84,7 @@ type VaccinationDose struct {
 	Mp VaccineMedicinalProduct
 	// Marketing authorization holder or manufacturer. See vaccine-mah-manf.json
 	// in the spec. Example "ORG-100030215" is "Biontech Manufacturing GmbH"
-	Ma string
+	Ma VaccineMahManf
 	// Dose sequence number. 1 for first dose, 2 for second dose, etc.
 	Dn float64
 	// Overall number of doses for this vaccine. 1 for 1-dose vaccine, 2 for

@@ -139,6 +139,7 @@ func main() {
 		"Country2Codes":           "country-2-codes",
 		"VaccineProphylaxis":      "vaccine-prophylaxis",
 		"VaccineMedicinalProduct": "vaccine-medicinal-product",
+		"VaccineMahManf":          "vaccine-mah-manf",
 	}
 	var types []string
 	for typeName, fileName := range genMap {
