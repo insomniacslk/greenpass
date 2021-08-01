@@ -47,12 +47,13 @@ func (c *CovidCertificate) Summary() string {
 			status = fmt.Sprintf("fully vaccinated with booster dose (%d of %d doses)", dn, sd)
 		}
 	}
-	ret := fmt.Sprintf("Name             : %s %s\n", c.Nam.Gn, c.Nam.Fn)
-	ret += fmt.Sprintf("Date of Birth    : %s\n", c.DoB)
-	ret += fmt.Sprintf("Status           : %s\n", status)
+	ret := fmt.Sprintf("Name                : %s %s\n", c.Nam.Gn, c.Nam.Fn)
+	ret += fmt.Sprintf("Date of Birth       : %s\n", c.DoB)
+	ret += fmt.Sprintf("Status              : %s\n", status)
 	if vaccineFound {
-		ret += fmt.Sprintf("Vaccination date : %s\n", c.V[0].Dt)
-		ret += fmt.Sprintf("Country          : %s\n", c.V[0].Co)
+		ret += fmt.Sprintf("Vaccination date    : %s\n", c.V[0].Dt)
+		ret += fmt.Sprintf("Country             : %s\n", c.V[0].Co)
+		ret += fmt.Sprintf("Vaccine Prophylaxis : %s\n", c.V[0].Vp)
 	}
 	return ret
 }
@@ -75,7 +76,7 @@ type VaccinationDose struct {
 	Tg DiseaseAgentTargeted
 	// Vaccine or prophylaxis. Example: "1119349007" is a SARS-COV-2 mRNA
 	// vaccine.
-	Vp string
+	Vp VaccineProphylaxis
 	// Vaccine medicinal product. See vaccine-medicinal-product.json in the
 	// spec. Example: "EU/1/20/1528" is Comirnaty (Pfizer).
 	Mp string

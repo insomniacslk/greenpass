@@ -44,7 +44,7 @@ func getURL(version, filename string) url.URL {
 	return url.URL{
 		Scheme: "https",
 		Host:   "raw.githubusercontent.com",
-		Path:   fmt.Sprintf("/ehn-dcc-development/ehn-dcc-schema/release/%s/valuesets/%s", version, filename),
+		Path:   fmt.Sprintf("/ehn-dcc-development/ehn-dcc-schema/release/%s/valuesets/%s.json", version, filename),
 	}
 }
 
@@ -137,6 +137,7 @@ func main() {
 	genMap := map[string]string{
 		"DiseaseAgentTargeted": "disease-agent-targeted",
 		"Country2Codes":        "country-2-codes",
+		"VaccineProphylaxis":   "vaccine-prophylaxis",
 	}
 	var types []string
 	for typeName, fileName := range genMap {
@@ -150,5 +151,5 @@ func main() {
 	if err := writeFile(*flagOutputFile, PackageName, types...); err != nil {
 		log.Fatalf("failed to write file: %v", err)
 	}
-	log.Printf("Written to file '%s'", *flagOutputFile)
+	log.Printf("Written %d types to file '%s'", len(genMap), *flagOutputFile)
 }
