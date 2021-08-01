@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/insomniacslk/greenpass"
-	"github.com/kr/pretty"
 )
 
 func main() {
@@ -23,5 +22,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pretty.Print(gp)
+	fmt.Println(gp.Summary())
 }

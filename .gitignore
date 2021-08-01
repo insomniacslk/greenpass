@@ -1,1 +1,2 @@
-greenpass
+cmd/greenpass/greenpass
+tools/generate_types/generate_types

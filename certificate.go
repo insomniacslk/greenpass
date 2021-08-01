@@ -1,5 +1,7 @@
 package greenpass
 
+import "fmt"
+
 // CovidCertificate represents an EU Digital Covid Certificate, see
 // specification at
 // https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf
@@ -19,6 +21,36 @@ type CovidCertificate struct {
 	R []RecoveryStatement
 }
 
+// Summary returns a multiline string that summarizes the content of the
+//CovidCertificate object.
+func (c *CovidCertificate) Summary() string {
+	var status string
+	vaccineFound := false
+	if c.V != nil && len(c.V) == 1 {
+		vaccineFound = true
+	}
+	if vaccineFound {
+		dn := c.V[0].Dn
+		sd := c.V[0].Sd
+		if dn == 0 {
+			status = "not vaccinated"
+		} else if dn < sd {
+			status = fmt.Sprintf("partially vaccinated (%d/%d doses)", dn, sd)
+		} else if dn == sd {
+			status = "fully vaccinated"
+		} else {
+			status = fmt.Sprintf("fully vaccinated with booster dose (%d/%d doses)", dn, sd)
+		}
+	}
+	ret := fmt.Sprintf("Name             : %s %s\n", c.Nam.Gn, c.Nam.Fn)
+	ret += fmt.Sprintf("Date of Birth    : %s\n", c.DoB)
+	ret += fmt.Sprintf("Status           : %s\n", status)
+	if vaccineFound {
+		ret += fmt.Sprintf("Vaccination date : %s\n", c.V[0].Dt)
+	}
+	return ret
+}
+
 // PersonName describes a person name according to the DCC spec.
 type PersonName struct {
 	// Surname
@@ -31,10 +63,15 @@ type PersonName struct {
 	Gnt string
 }
 
+//go:generate go run tools/generate_types/main.go -o types.go
+//go:generate gofmt -w types.go
+
+type TargetedAgent string
+
 // VaccinationDose describes a vaccination dose according to the DCC spec.
 type VaccinationDose struct {
 	// Disease or agent targeted. COVID-19 is 840539006.
-	Tg string
+	Tg DiseaseAgentTargeted
 	// Vaccine or prophylaxis. Example: "1119349007" is a SARS-COV-2 mRNA
 	// vaccine.
 	Vp string
