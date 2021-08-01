@@ -1,2 +1,3 @@
 cmd/greenpass/greenpass
 tools/generate_types/generate_types
+tools/generate_jsonschema/generate_jsonschema

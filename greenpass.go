@@ -101,6 +101,9 @@ func Decode(img image.Image) (*CovidCertificate, error) {
 	if !ok {
 		return nil, fmt.Errorf("covid certificate JSON not found: key 1 is missing")
 	}
+	if err := cc.Validate(); err != nil {
+		return nil, err
+	}
 
 	return &cc, nil
 }

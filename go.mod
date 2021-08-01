@@ -9,4 +9,5 @@ require (
 	github.com/kr/pretty v0.3.0
 	github.com/makiuchi-d/gozxing v0.0.2
 	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/xeipuuv/gojsonschema v1.2.0
 )
