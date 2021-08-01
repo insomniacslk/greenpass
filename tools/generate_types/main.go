@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/insomniacslk/xjson"
 )
@@ -65,57 +66,37 @@ func get(version, filename string) (*Header, error) {
 	return &hdr, nil
 }
 
-func generateDiseaseAgentTargeted(version string) (string, error) {
-	hdr, err := get(version, "disease-agent-targeted.json")
+func generateType(version, typeName, filename string) (string, error) {
+	if strings.Title(typeName) != typeName {
+		return "", fmt.Errorf("type name must start with capital letter, got '%s'", typeName)
+	}
+	if len(typeName) < 2 {
+		return "", fmt.Errorf("type name must be at least 2 chars long, got '%s'", typeName)
+	}
+	nameMapVar := strings.ToLower(typeName[0:1]) + typeName[1:] + "Names"
+	hdr, err := get(version, filename)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse header for DiseaseAgentTargeted: %w", err)
+		return "", fmt.Errorf("failed to parse header for '%s': %w", typeName, err)
 	}
 
 	var nameMap string
 	for k, v := range hdr.ValueSetValues {
 		nameMap += fmt.Sprintf("\t\"%s\": \"%s\",\n", k, v.Display)
 	}
-	data := fmt.Sprintf(`type DiseaseAgentTargeted string
+	data := fmt.Sprintf(`type %s string
 
-func (dat DiseaseAgentTargeted) String() string {
-	name, ok := diseaseAgentTargetedNames[dat]
+func (this %s) String() string {
+	name, ok := %s[this]
 	if !ok {
-		return fmt.Sprintf("unknown('%%s')", dat)
+		return fmt.Sprintf("unknown('%%s')", this)
 	}
 	return name
 }
 
-var diseaseAgentTargetedNames = map[DiseaseAgentTargeted]string {
+var %s = map[%s]string {
 %s
 }
-`, nameMap)
-	return data, nil
-}
-
-func generateCountry2Codes(version string) (string, error) {
-	hdr, err := get(version, "country-2-codes.json")
-	if err != nil {
-		return "", fmt.Errorf("failed to generate data for Country2Codes: %w", err)
-	}
-
-	var nameMap string
-	for k, v := range hdr.ValueSetValues {
-		nameMap += fmt.Sprintf("\t\"%s\": \"%s\",\n", k, v.Display)
-	}
-	data := fmt.Sprintf(`type Country2Codes string
-
-func (cc Country2Codes) String() string {
-	name, ok := country2CodesNames[cc]
-	if !ok {
-		return fmt.Sprintf("unknown('%%s')", cc)
-	}
-	return name
-}
-
-var country2CodesNames = map[Country2Codes]string {
-%s
-}
-`, nameMap)
+`, typeName, typeName, nameMapVar, nameMapVar, typeName, nameMap)
 	return data, nil
 }
 
@@ -153,19 +134,20 @@ import (
 func main() {
 	flag.Parse()
 	log.Print("Generating types")
-	// generate from disease-agent-targeted.json
-	diseaseAgentTargeted, err := generateDiseaseAgentTargeted(*flagVersion)
-	if err != nil {
-		log.Fatalf("Failed to generate DiseaseAgentTargeted: %v", err)
+	genMap := map[string]string{
+		"DiseaseAgentTargeted": "disease-agent-targeted",
+		"Country2Codes":        "country-2-codes",
 	}
-	// generate from country-2-codes.json
-	country2Codes, err := generateCountry2Codes(*flagVersion)
-	if err != nil {
-		log.Fatalf("Failed to generate Country2Codes: %v", err)
+	var types []string
+	for typeName, fileName := range genMap {
+		genType, err := generateType(*flagVersion, typeName, fileName)
+		if err != nil {
+			log.Fatalf("Failed to generate type '%s': %v", typeName, err)
+		}
+		types = append(types, genType)
 	}
 	// write everything to file
-	if err := writeFile(*flagOutputFile, PackageName,
-		diseaseAgentTargeted, country2Codes); err != nil {
+	if err := writeFile(*flagOutputFile, PackageName, types...); err != nil {
 		log.Fatalf("failed to write file: %v", err)
 	}
 	log.Printf("Written to file '%s'", *flagOutputFile)
