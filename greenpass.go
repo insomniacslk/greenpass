@@ -80,9 +80,27 @@ func Decode(img image.Image) (interface{}, error) {
 		return nil, fmt.Errorf("CBOR-2 content of item 2 is not a byte array")
 	}
 	// decode the third item, which contains the green pass data
-	var data map[interface{}]interface{}
+	var data map[int]cbor.RawMessage
 	if err := cbor.Unmarshal(contentBytes, &data); err != nil {
 		return nil, fmt.Errorf("failed to decode inner CBOR-2 data: %w", err)
 	}
-	return data, nil
+	// FIXME figure out what the `-260` key means (it contains the actual
+	// JSON content of the digital covid certificate), and what the
+	// remaining bits of data are precisely. One is the country code, the
+	// other ones look like timestamps.
+	// Also figure out why the data is further nested in a field with key 0x1.
+	ccraw1, ok := data[-260]
+	if !ok {
+		return nil, fmt.Errorf("covid certificate JSON not found: key -260 is missing")
+	}
+	var data2 map[int]CovidCertificate
+	if err := cbor.Unmarshal(ccraw1, &data2); err != nil {
+		return nil, fmt.Errorf("failed to decode inner CBOR-2 data: %w", err)
+	}
+	cc, ok := data2[1]
+	if !ok {
+		return nil, fmt.Errorf("covid certificate JSON not found: key 1 is missing")
+	}
+
+	return &cc, nil
 }

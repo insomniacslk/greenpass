@@ -1,0 +1,3 @@
+* validate with JSON schema
+* validate signature
+* implement TestResult and RecoveryStatement as per https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf
