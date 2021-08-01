@@ -23,6 +23,22 @@ var (
 	flagVersion    = flag.String("V", "1.3.0", "Version of the Digital COVID Certificate to generate types from")
 )
 
+// Header is the JSON header for value sets.
+type Header struct {
+	ValueSetID     string
+	ValueSetDate   string
+	ValueSetValues map[string]Value
+}
+
+// Value is a value-set value.
+type Value struct {
+	Display string
+	Lang    string
+	Active  bool
+	Version xjson.URL
+	System  xjson.URL
+}
+
 func getURL(version, filename string) url.URL {
 	return url.URL{
 		Scheme: "https",
@@ -31,48 +47,33 @@ func getURL(version, filename string) url.URL {
 	}
 }
 
-func get(version, filename string, obj interface{}) error {
+func get(version, filename string) (*Header, error) {
 	u := getURL(version, filename)
 	resp, err := http.Get(u.String())
 	if err != nil {
-		return fmt.Errorf("HTTP GET failed: %w", err)
+		return nil, fmt.Errorf("HTTP GET failed: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to read HTTP body: %w", err)
+		return nil, fmt.Errorf("failed to read HTTP body: %w", err)
 	}
-	if err := json.Unmarshal(body, obj); err != nil {
-		return fmt.Errorf("failed to decode JSON for '%s': %w", filename, err)
+	var hdr Header
+	if err := json.Unmarshal(body, &hdr); err != nil {
+		return nil, fmt.Errorf("failed to decode JSON header for '%s': %w", filename, err)
 	}
-	return nil
-}
-
-// DiseaseAgentTargeted maps disease-agent-targeted.json to a struct.
-type DiseaseAgentTargeted struct {
-	ValueSetID     string
-	ValueSetDate   string
-	ValueSetValues map[string]ValueSetValue
-}
-
-// ValueSetValue is a sub-type of DiseaseAgentTargeted.
-type ValueSetValue struct {
-	Display string
-	Lang    string
-	Active  bool
-	Version xjson.URL
-	System  xjson.URL
+	return &hdr, nil
 }
 
 func generateDiseaseAgentTargeted(version string) (string, error) {
-	var dat DiseaseAgentTargeted
-	if err := get(version, "disease-agent-targeted.json", &dat); err != nil {
-		return "", fmt.Errorf("failed to generate data for DiseaseAgentTargeted: %w", err)
+	hdr, err := get(version, "disease-agent-targeted.json")
+	if err != nil {
+		return "", fmt.Errorf("failed to parse header for DiseaseAgentTargeted: %w", err)
 	}
 
 	var nameMap string
-	for k, v := range dat.ValueSetValues {
-		nameMap += fmt.Sprintf("\t\"%s\": \"%s\",", k, v.Display)
+	for k, v := range hdr.ValueSetValues {
+		nameMap += fmt.Sprintf("\t\"%s\": \"%s\",\n", k, v.Display)
 	}
 	data := fmt.Sprintf(`type DiseaseAgentTargeted string
 
@@ -85,6 +86,33 @@ func (dat DiseaseAgentTargeted) String() string {
 }
 
 var diseaseAgentTargetedNames = map[DiseaseAgentTargeted]string {
+%s
+}
+`, nameMap)
+	return data, nil
+}
+
+func generateCountry2Codes(version string) (string, error) {
+	hdr, err := get(version, "country-2-codes.json")
+	if err != nil {
+		return "", fmt.Errorf("failed to generate data for Country2Codes: %w", err)
+	}
+
+	var nameMap string
+	for k, v := range hdr.ValueSetValues {
+		nameMap += fmt.Sprintf("\t\"%s\": \"%s\",\n", k, v.Display)
+	}
+	data := fmt.Sprintf(`type Country2Codes string
+
+func (cc Country2Codes) String() string {
+	name, ok := country2CodesNames[cc]
+	if !ok {
+		return fmt.Sprintf("unknown('%%s')", cc)
+	}
+	return name
+}
+
+var country2CodesNames = map[Country2Codes]string {
 %s
 }
 `, nameMap)
@@ -125,11 +153,19 @@ import (
 func main() {
 	flag.Parse()
 	log.Print("Generating types")
+	// generate from disease-agent-targeted.json
 	diseaseAgentTargeted, err := generateDiseaseAgentTargeted(*flagVersion)
 	if err != nil {
-		log.Fatalf("Failed to generate disease-agent-DiseaseAgentTargeted: %v", err)
+		log.Fatalf("Failed to generate DiseaseAgentTargeted: %v", err)
 	}
-	if err := writeFile(*flagOutputFile, PackageName, diseaseAgentTargeted); err != nil {
+	// generate from country-2-codes.json
+	country2Codes, err := generateCountry2Codes(*flagVersion)
+	if err != nil {
+		log.Fatalf("Failed to generate Country2Codes: %v", err)
+	}
+	// write everything to file
+	if err := writeFile(*flagOutputFile, PackageName,
+		diseaseAgentTargeted, country2Codes); err != nil {
 		log.Fatalf("failed to write file: %v", err)
 	}
 	log.Printf("Written to file '%s'", *flagOutputFile)

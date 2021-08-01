@@ -52,6 +52,7 @@ func (c *CovidCertificate) Summary() string {
 	ret += fmt.Sprintf("Status           : %s\n", status)
 	if vaccineFound {
 		ret += fmt.Sprintf("Vaccination date : %s\n", c.V[0].Dt)
+		ret += fmt.Sprintf("Country          : %s\n", c.V[0].Co)
 	}
 	return ret
 }
@@ -90,7 +91,7 @@ type VaccinationDose struct {
 	Dt string
 	// Country where the vaccine was administered, ISO3166 (2-letter) coded.
 	// Example: "IE" is Ireland. See country-2-codes.json from the spec.
-	Co string
+	Co Country2Codes
 	// Certificate issuer, name of the organization that issued the certificate.
 	Is string
 	// Unique Certificate Identifier, prefixed with "URN:UVCI:". See UVCI in
