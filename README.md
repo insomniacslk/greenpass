@@ -82,6 +82,7 @@ fmt.Printf("%+v", gp)
 ## Useful links
 
 * [Technical Specifications for EU Digital COVID Certificates](https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf)
+* [Electronic Health Certificate specification](https://github.com/ehn-dcc-development/hcert-spec)
 * [Digital COVID Certificate JSON schema](https://github.com/ehn-dcc-development/ehn-dcc-schema)
 * [Digital COVID Certificate test data](https://github.com/ehn-dcc-development/dcc-testdata)
 * [Online Digital COVID Certificate decoder](https://ehealth.vyncke.org/) with a
