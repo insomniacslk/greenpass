@@ -54,6 +54,7 @@ func (c *CovidCertificate) Summary() string {
 		ret += fmt.Sprintf("Vaccination date    : %s\n", c.V[0].Dt)
 		ret += fmt.Sprintf("Country             : %s\n", c.V[0].Co)
 		ret += fmt.Sprintf("Vaccine Prophylaxis : %s\n", c.V[0].Vp)
+		ret += fmt.Sprintf("Vaccine Product     : %s\n", c.V[0].Mp)
 	}
 	return ret
 }
@@ -79,7 +80,7 @@ type VaccinationDose struct {
 	Vp VaccineProphylaxis
 	// Vaccine medicinal product. See vaccine-medicinal-product.json in the
 	// spec. Example: "EU/1/20/1528" is Comirnaty (Pfizer).
-	Mp string
+	Mp VaccineMedicinalProduct
 	// Marketing authorization holder or manufacturer. See vaccine-mah-manf.json
 	// in the spec. Example "ORG-100030215" is "Biontech Manufacturing GmbH"
 	Ma string

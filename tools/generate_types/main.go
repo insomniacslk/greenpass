@@ -135,9 +135,10 @@ func main() {
 	flag.Parse()
 	log.Print("Generating types")
 	genMap := map[string]string{
-		"DiseaseAgentTargeted": "disease-agent-targeted",
-		"Country2Codes":        "country-2-codes",
-		"VaccineProphylaxis":   "vaccine-prophylaxis",
+		"DiseaseAgentTargeted":    "disease-agent-targeted",
+		"Country2Codes":           "country-2-codes",
+		"VaccineProphylaxis":      "vaccine-prophylaxis",
+		"VaccineMedicinalProduct": "vaccine-medicinal-product",
 	}
 	var types []string
 	for typeName, fileName := range genMap {
