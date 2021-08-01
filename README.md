@@ -58,6 +58,13 @@ gp, _ := greenpass.Decode(img)
 fmt.Printf("%+v", gp)
 ```
 
+## Generated code
+
+Some data structures are generated via
+[`tools/generate_types`](tools/generate_types). If you need to regenerate them
+(e.g. because they were updated), just run `go generate` in the top level
+directory.
+
 ## Useful links
 
 * [Technical Specifications for EU Digital COVID Certificates](https://ec.europa.eu/health/sites/default/files/ehealth/docs/covid-certificate_json_specification_en.pdf)
