@@ -18,7 +18,7 @@ func jsRead() js.Func {
 		if err != nil {
 			return fmt.Errorf("failed to read QR code: %w", err).Error()
 		}
-		return gp.Summary()
+		return gp.SummaryAsHTML()
 	})
 	return fn
 }

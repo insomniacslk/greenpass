@@ -58,15 +58,16 @@ func (c *CovidCertificate) Validate() error {
 	return fmt.Errorf("found %d errors: %v", len(result.Errors()), strings.Join(errors, "; "))
 }
 
-// Summary returns a multiline string that summarizes the content of the
-//CovidCertificate object.
-func (c *CovidCertificate) Summary() string {
-	var status string
-	vaccineFound := false
+func (c *CovidCertificate) vaccineFound() bool {
 	if c.V != nil && len(c.V) == 1 {
-		vaccineFound = true
+		return true
 	}
-	if vaccineFound {
+	return false
+}
+
+func (c *CovidCertificate) Status() string {
+	var status string
+	if c.vaccineFound() {
 		dn := int(c.V[0].Dn)
 		sd := int(c.V[0].Sd)
 		if dn == 0 {
@@ -79,15 +80,42 @@ func (c *CovidCertificate) Summary() string {
 			status = fmt.Sprintf("fully vaccinated with booster dose (%d of %d doses)", dn, sd)
 		}
 	}
-	ret := fmt.Sprintf("Name                    : %s %s\n", c.Nam.Gn, c.Nam.Fn)
-	ret += fmt.Sprintf("Date of Birth           : %s\n", c.DoB)
-	ret += fmt.Sprintf("Status                  : %s\n", status)
-	if vaccineFound {
-		ret += fmt.Sprintf("Vaccination date        : %s\n", c.V[0].Dt)
-		ret += fmt.Sprintf("Country                 : %s\n", c.V[0].Co)
-		ret += fmt.Sprintf("Vaccine Prophylaxis     : %s\n", c.V[0].Vp)
-		ret += fmt.Sprintf("Vaccine Product         : %s\n", c.V[0].Mp)
-		ret += fmt.Sprintf("Marketing Authorization : %s\n", c.V[0].Ma)
+	return status
+}
+
+// SummaryAsList is like Summary, but returns the items as a list of
+// two-item lists.
+func (c *CovidCertificate) SummaryAsList() [][2]string {
+	// preallocate at least 3 elements, the common ones
+	ret := make([][2]string, 0, 3)
+	ret = append(ret, [2]string{"Name", c.Nam.Gn + " " + c.Nam.Fn})
+	ret = append(ret, [2]string{"Date of Birth", c.DoB})
+	ret = append(ret, [2]string{"Status", c.Status()})
+	if c.vaccineFound() {
+		ret = append(ret, [2]string{"Vaccination date", c.V[0].Dt})
+		ret = append(ret, [2]string{"Country", c.V[0].Co.String()})
+		ret = append(ret, [2]string{"Vaccine Prophylaxis", c.V[0].Vp.String()})
+		ret = append(ret, [2]string{"Vaccine Product", c.V[0].Mp.String()})
+		ret = append(ret, [2]string{"Marketing Authorization", c.V[0].Ma.String()})
+	}
+	return ret
+}
+
+// SummaryAsHTML is like Summary, but returns the items as an HTML table.
+func (c *CovidCertificate) SummaryAsHTML() string {
+	ret := "<table>\n"
+	for _, v := range c.SummaryAsList() {
+		ret += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>\n", v[0], v[1])
+	}
+	return ret + "</table>\n"
+}
+
+// Summary returns a multiline string that summarizes the content of the
+//CovidCertificate object.
+func (c *CovidCertificate) Summary() string {
+	var ret string
+	for _, v := range c.SummaryAsList() {
+		ret += fmt.Sprintf("%s : %s\n", v[0], v[1])
 	}
 	return ret
 }
