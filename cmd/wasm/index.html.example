@@ -1,0 +1,47 @@
+<html>
+    <head><meta charset="utf-8"/></head>
+    <body>
+
+Digital COVID Certificate parser.
+
+Just upload or take a close photo of the QR
+code. The image is parsed in your browser and never sent to this server.
+
+Source code at https://github.com/insomniacslk/greenpass .
+
+<input type="file" accept="image/*" capture="camera" />
+<div id="result"></div>
+
+<script>
+// you can use `imageBytes` after picking an image from the file selector, to
+// test `greenpassRead` in the browser console.
+var imageBytes;
+document.querySelector('input').addEventListener('change', function() {
+
+  var reader = new FileReader();
+  reader.onload = function() {
+
+    var arrayBuffer = this.result,
+      array = new Uint8Array(arrayBuffer),
+      binaryString = greenpassRead(binaryString);
+      imageBytes = binaryString;
+      const rdiv = document.getElementById('result');
+      rdiv.innerHTML = binaryString;
+
+  }
+  reader.readAsArrayBuffer(this.files[0]);
+
+}, false);
+</script>
+
+<script src="wasm_exec.js"></script>
+<script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("greenpass.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+    });
+</script>
+
+    </body>
+</html>
+
