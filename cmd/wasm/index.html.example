@@ -23,10 +23,10 @@ document.querySelector('input').addEventListener('change', function() {
 
     var arrayBuffer = this.result,
       array = new Uint8Array(arrayBuffer),
-      binaryString = greenpassRead(binaryString);
-      imageBytes = binaryString;
+      imageBytes = array;
+      result = greenpassRead(array);
       const rdiv = document.getElementById('result');
-      rdiv.innerHTML = binaryString;
+      rdiv.innerHTML = result;
 
   }
   reader.readAsArrayBuffer(this.files[0]);
