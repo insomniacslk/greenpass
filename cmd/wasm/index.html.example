@@ -20,13 +20,13 @@ document.querySelector('input').addEventListener('change', function() {
 
   var reader = new FileReader();
   reader.onload = function() {
-
     var arrayBuffer = this.result,
-      array = new Uint8Array(arrayBuffer),
-      imageBytes = array;
-      result = greenpassRead(array);
+      arr = new Uint8Array(arrayBuffer),
+      imageBytes = arr;
+      result = greenpassFromBytes(arr);
       const rdiv = document.getElementById('result');
       rdiv.innerHTML = result;
+      console.log("For debugging purposes you can call `greenpassFromBytes(imageBytes)` after selecting a file")
 
   }
   reader.readAsArrayBuffer(this.files[0]);

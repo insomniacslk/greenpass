@@ -33,6 +33,11 @@ func Read(r io.Reader) (*CovidCertificate, error) {
 	return Decode(img)
 }
 
+// FromBytes reads an EU COVID-19 Green Pass from bytes.
+func FromBytes(imagedata []byte) (*CovidCertificate, error) {
+	return Read(bytes.NewReader(imagedata))
+}
+
 // Decode decodes an image into a structure containing the EU COVID-19
 // Green Pass data.
 func Decode(img image.Image) (*CovidCertificate, error) {
